@@ -1,56 +1,68 @@
-name: React Vite CI/CD
+# name: React Vite CI/CD
+# 
+# on:
+#   push:
+#     branches: [ "main", "master" ]
+#   pull_request:
+#     branches: [ "main", "master" ]
+# 
+# # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+# permissions:
+#   contents: read
+#   pages: write
+#   id-token: write
+# 
+# # Allow only one concurrent deployment
+# concurrency:
+#   group: "pages"
+#   cancel-in-progress: true
+# 
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
+# 
+#       - name: Setup Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: 20
+#           cache: 'npm'
+# 
+#       - name: Install dependencies
+#         run: npm install
+# 
+#       - name: Build the project
+#         run: npm run build
+# 
+#       - name: Setup GitHub Pages
+#         uses: actions/configure-pages@v4
+# 
+#       - name: Upload artifact
+#         uses: actions/upload-pages-artifact@v3
+#         with:
+#           path: './dist'
+# 
+#   deploy:
+#     environment:
+#       name: github-pages
+#       url: ${{ steps.deployment.outputs.page_url }}
+#     runs-on: ubuntu-latest
+#     needs: build
+#     steps:
+#       - name: Deploy to GitHub Pages
+#         id: deployment
+#         uses: actions/deploy-pages@v4
 
-on:
-  push:
-    branches: [ "main", "master" ]
-  pull_request:
-    branches: [ "main", "master" ]
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
 
-# Allow only one concurrent deployment
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
+  # WORKING OF THIS METHOD
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+#   main.yml ചെയ്യുന്നത്: നിങ്ങളുടെ കോഡ് എടുക്കുന്നു ➡️ Node.js സെറ്റപ്പ് ചെയ്യുന്നു
+#    ➡️ npm run build വഴി dist ഫയൽ ഉണ്ടാക്കുന്നു ➡️ 
+#   അത് GitHub Pages-ലേക്ക് പബ്ലിഷ് ചെയ്യുന്നു.
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build the project
-        run: npm run build
-
-      - name: Setup GitHub Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: './dist'
-
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+# docker-publish.yml ചെയ്യുന്നത് (ഇതിന് പകരമായി):
+#  നിങ്ങളുടെ കോഡ് എടുക്കുന്നു ➡️ ഡോക്കറിനോട് ഇമേജ് ഉണ്ടാക്കാൻ പറയുന്നു ➡️ 
+#  അത് Docker Hub-ലേക്ക് പബ്ലിഷ് ചെയ്യുന്നു.
