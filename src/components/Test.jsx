@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './Test.css';
 
 const INITIAL_PROJECTS = [
@@ -71,6 +71,19 @@ const Test = () => {
   const [activeFilter, setActiveFilter] = useState('All');
   const [projects, setProjects] = useState(INITIAL_PROJECTS);
   const [activeNav, setActiveNav] = useState('Home');
+  const [theme, setTheme] = useState('light'); // Clean Minimalist Light Mode by default
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(nextTheme);
+    document.body.style.backgroundColor = nextTheme === 'light' ? '#f8fafc' : '#07080d';
+    document.body.style.color = nextTheme === 'light' ? '#0f172a' : '#f8fafc';
+    setToastMessage(`Switched to ${nextTheme === 'light' ? 'Clean Minimalist Light Mode ☀️' : 'Cyber Dark Mode 🌙'}`);
+    setShowToast(true);
+    setTimeout(() => {
+      setShowToast(false);
+    }, 2500);
+  };
 
   const handleBuildMagic = () => {
     const nextCount = magicCount + 1;
@@ -95,7 +108,7 @@ const Test = () => {
       : projects.filter(p => p.category === activeFilter);
 
   return (
-    <div className="galleria-page">
+    <div className={`galleria-page ${theme === 'light' ? 'theme-light' : 'theme-dark'}`}>
       {/* Background Animated Ambient Lights & Grid */}
       <div className="ambient-glow-container">
         <div className="glow-orb glow-orb-1"></div>
@@ -124,17 +137,29 @@ const Test = () => {
             ))}
           </nav>
 
-          <button 
-            className="nav-cta"
-            onClick={() => {
-              setToastMessage("🚀 Let's collaborate! Reach out to Vishnu to build something extraordinary.");
-              setShowToast(true);
-              setTimeout(() => setShowToast(false), 3000);
-            }}
-          >
-            <span>Let's Connect</span>
-            <span>→</span>
-          </button>
+          <div className="nav-actions">
+            <button 
+              className="theme-toggle-btn"
+              onClick={toggleTheme}
+              title={`Switch to ${theme === 'light' ? 'Cyber Dark' : 'Clean Light'} Mode`}
+              aria-label="Toggle theme"
+            >
+              <span className="theme-toggle-icon">{theme === 'light' ? '🌙' : '☀️'}</span>
+              <span className="theme-toggle-text">{theme === 'light' ? 'Dark' : 'Light'}</span>
+            </button>
+
+            <button 
+              className="nav-cta"
+              onClick={() => {
+                setToastMessage("🚀 Let's collaborate! Reach out to Vishnu to build something extraordinary.");
+                setShowToast(true);
+                setTimeout(() => setShowToast(false), 3000);
+              }}
+            >
+              <span>Let's Connect</span>
+              <span>→</span>
+            </button>
+          </div>
         </header>
 
         {/* Hero Section */}
