@@ -1,26 +1,52 @@
+# Workflow display name in GitHub Actions
 name: Docker Build and Publish
 
+# Trigger condition
 on:
   push:
+    # Runs only when code is pushed to main or master branch
     branches: [ "main", "master" ]
 
+# Defined jobs
 jobs:
   build-and-push:
+    # Virtual machine runner provided by GitHub
     runs-on: ubuntu-latest
     
+    # Sequence of steps executed in order
     steps:
+      # Step 1: Download repository source code to the runner
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Step 2: Set up Node.js runtime environment (version 20) with npm cache
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      # Step 3: Install all project dependencies cleanly from package-lock.json
+      - name: Install dependencies
+        run: npm ci
+
+      # Step 4 (CI Phase): Check code quality & syntax errors using ESLint
+      # If this fails, the workflow stops and does not build the Docker image
+      - name: Run Linting / Code Quality Check
+        run: npm run lint
+
+      # Step 5: Configure Docker Buildx engine for advanced image building & caching
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      # Step 6: Authenticate with Docker Hub using repository secrets
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # Step 7 (CD Phase): Build the container image via Dockerfile and push to Docker Hub
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
