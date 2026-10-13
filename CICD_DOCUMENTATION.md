@@ -57,13 +57,42 @@ flowchart TD
 
 ---
 
-### ഘട്ടം 2: Continuous Delivery (CD)
-* **ലക്ഷ്യം:** ടെസ്റ്റുകൾ പാസ്സായ പുതിയ കോഡിനെ, ഏത് സെർവറിലും പ്രവർത്തിപ്പിക്കാൻ പാകത്തിലുള്ള ഒരു **റിലീസ് ആർട്ടിഫാക്റ്റ് (Docker Image)** ആയി സുരക്ഷിതമായി നിർമ്മിച്ച് ഒരു രജിസ്ട്രിയിൽ (Docker Hub) എത്തിക്കുക.
-* **പ്രവർത്തന ഘട്ടങ്ങൾ:**
-  1. GitHub Secrets വഴി സുരക്ഷിതമായി Docker Hub-ലേക്ക് ലോഗിൻ ചെയ്യുന്നു (`DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`).
-  2. [Dockerfile](file:///c:/Users/vishn/OneDrive/Desktop/galleria/Dockerfile) അടിസ്ഥാനമാക്കി ആപ്ലിക്കേഷനെ Nginx സെർവർ അടങ്ങിയ ഒരു ലൈറ്റ്-വെയ്റ്റ് കണ്ടെയ്നർ ഇമേജായി ബിൽഡ് ചെയ്യുന്നു.
-  3. നിർമ്മിച്ച പുതിയ ഇമേജിനെ `vishnuv444/galleria-app:latest` എന്ന ടാഗോടെ **Docker Hub**-ലേക്ക് പബ്ലിഷ് ചെയ്യുന്നു.
-  4. ഇതിലൂടെ ഈ ഇമേജ് ഏത് സമയത്തും ഏത് ക്ലൗഡ് സെർവറിലേക്കും ഡിപ്ലോയ് ചെയ്യാൻ തയ്യാറായി നിൽക്കുന്നു (Ready to Deploy).
+### ഘട്ടം 2: Continuous Delivery (CD) — Docker Image Build & Publish
+* **ലക്ഷ്യം:** ടെസ്റ്റുകൾ പാസ്സായ പുതിയ കോഡിനെ, ഏത് സെർവറിലും പ്രവർത്തിപ്പിക്കാൻ പാകത്തിലുള്ള ഒരു **റിലീസ് ആർട്ടിഫാക്റ്റ് (Docker Image)** ആയി നിർമ്മിച്ച് **Docker Hub** രജിസ്ട്രിയിൽ സുരക്ഷിതമായി എത്തിക്കുക.
+* **നടക്കുന്ന ഫയൽ:** [.github/workflows/docker-publish.yml](file:///c:/Users/vishn/OneDrive/Desktop/galleria/.github/workflows/docker-publish.yml)
+
+#### 🛠️ Docker Image എങ്ങനെയാണ് ബിൽഡ് ചെയ്യുന്നത്? (Detailed Step-by-Step)
+
+```text
+Step 1: Buildx Engine Init ➡️ Step 2: Docker Hub Login ➡️ Step 3: Multi-Stage Build ➡️ Step 4: Registry Push
+```
+
+1. **Docker Buildx സജ്ജീകരിക്കൽ (`docker/setup-buildx-action@v3`):**
+   - GitHub Actions റണ്ണറിൽ Docker-ന്റെ അത്യാധുനിക **BuildKit** എൻജിൻ തയ്യാറാക്കുന്നു.
+   - ഇത് ഓരോ ലെയറും വേഗത്തിൽ കാഷെ (Cache) ചെയ്യാനും അതിവേഗത്തിൽ ബിൽഡ് പൂർത്തിയാക്കാനും സഹായിക്കുന്നു.
+
+2. **Docker Hub ലോഗിൻ (`docker/login-action@v3`):**
+   - GitHub Repository Secrets-ൽ നിങ്ങൾ നൽകിയിട്ടുള്ള `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN` ഉപയോഗിച്ച് സെക്യൂർ ആയി ലോഗിൻ ചെയ്യുന്നു.
+
+3. **Multi-Stage Dockerfile എക്സിക്യൂഷൻ (`docker/build-push-action@v5`):**
+   [Dockerfile](file:///c:/Users/vishn/OneDrive/Desktop/galleria/Dockerfile) പ്രവർത്തിച്ച് ഇമേജ് രണ്ട് ഘട്ടങ്ങളിലായി (Multi-Stage) നിർമ്മിക്കുന്നു:
+
+   * **ഘട്ടം A: Build Stage (`node:20-alpine AS build`)**
+     - `FROM node:20-alpine`: ഭാരം കുറഞ്ഞ Node.js ലിനക്സ് എൻവയോൺമെന്റ് എടുക്കുന്നു.
+     - `WORKDIR /app`: കണ്ടെയ്നറിനുള്ളിൽ `/app` ഫോൾഡർ ഉണ്ടാക്കുന്നു.
+     - `COPY package*.json ./` & `RUN npm install`: കോഡിനാവശ്യമായ React, Vite ലൈബ്രറികൾ ഇൻസ്റ്റാൾ ചെയ്യുന്നു.
+     - `COPY . .`: മുഴുവൻ സോഴ്സ് കോഡും കണ്ടെയ്നറിലേക്ക് പകർത്തുന്നു.
+     - `RUN npm run build`: Vite പ്രൊഡക്ഷൻ ബിൽഡ് റൺ ചെയ്ത് മിനിഫൈ ചെയ്ത HTML, CSS, JavaScript ഫയലുകൾ `/app/dist`-ലേക്ക് മാറ്റുന്നു.
+
+   * **ഘട്ടം B: Production Runtime Stage (`nginx:alpine`)**
+     - `FROM nginx:alpine`: കേവലം ~20MB മാത്രം വലിപ്പമുള്ള അതിവേഗ Nginx വെബ് സെർവർ എടുക്കുന്നു.
+     - `COPY --from=build /app/dist /usr/share/nginx/html`: Stage 1-ൽ ബിൽഡ് ചെയ്ത വെബ്സൈറ്റ് ഫയലുകൾ മാത്രം Nginx-ലേക്ക് കോപ്പി ചെയ്യുന്നു. (Node.js, devDependencies, node_modules എന്നിവ ഇവിടെ ഒഴിവാക്കുന്നു. ഇത് ഇമേജ് സൈസ് 500MB-ൽ നിന്ന് വെറും ~26MB ആയി ചുരുക്കുന്നു!).
+     - `EXPOSE 80`: ട്രാഫിക്കിനായി Port 80 തുറക്കുന്നു.
+     - `CMD ["nginx", "-g", "daemon off;"]`: കണ്ടെയ്നർ സ്റ്റോപ്പ് ആകാതെ Nginx സെർവർ റൺ ചെയ്യാൻ കമാൻഡ് നൽകുന്നു.
+
+4. **Docker Hub-ലേക്ക് Push ചെയ്യൽ:**
+   - ബിൽഡ് ചെയ്ത ലെയറുകൾ കംപ്രസ്സ് ചെയ്ത് **`${{ secrets.DOCKERHUB_USERNAME }}/galleria-app:latest`** എന്ന ടാഗോടെ Docker Hub-ലേക്ക് അപ്‌ലോഡ് ചെയ്യുന്നു.
+   - ഇനി ഈ ഇമേജ് ലോകത്തെ ഏത് സെർവറിലും `docker run` വഴി നിമിഷങ്ങൾക്കകം റൺ ചെയ്യാൻ തയ്യാറാണ്.
 
 ---
 
