@@ -1,4 +1,4 @@
-/* Global Reset & Base Styles */
+/* Global Reset & Base Styles - Light Theme */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -7,14 +7,14 @@
 
 html {
   scroll-behavior: smooth;
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
   margin: 0;
   padding: 0;
-  background-color: #0b0d13;
-  color: #f1f5f9;
+  background-color: #f8fafc;
+  color: #0f172a;
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
