@@ -1,337 +1,118 @@
 import { useState } from 'react';
 import './Test.css';
 
-const INITIAL_PROJECTS = [
-  {
-    id: 1,
-    title: 'Galleria 3D Showcase',
-    category: '3D & Visuals',
-    desc: 'An immersive digital art showroom with real-time interactive lighting and ambient audio shaders.',
-    tags: ['Three.js', 'React', 'GLSL', 'Vite'],
-    likes: 42,
-    gradient: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-    icon: '🔮'
-  },
-  {
-    id: 2,
-    title: 'Nova AI Agent Studio',
-    category: 'Web Apps',
-    desc: 'Next-gen autonomous AI workspace with reactive streaming nodes and real-time canvas collaboration.',
-    tags: ['React 19', 'TypeScript', 'Tailwind', 'WebSockets'],
-    likes: 89,
-    gradient: 'linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%)',
-    icon: '⚡'
-  },
-  {
-    id: 3,
-    title: 'Aura Glassmorphism UI',
-    category: 'UI Concepts',
-    desc: 'Modern component design system crafted with dynamic blur layers, neon hues, and responsive micro-interactions.',
-    tags: ['Design System', 'Figma', 'CSS Modules'],
-    likes: 67,
-    gradient: 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)',
-    icon: '✨'
-  },
-  {
-    id: 4,
-    title: 'CyberPulse Analytics',
-    category: 'Web Apps',
-    desc: 'High-throughput telemetry dashboard tracking cloud microservices with sub-millisecond chart renders.',
-    tags: ['D3.js', 'Next.js', 'Rust Engine'],
-    likes: 54,
-    gradient: 'linear-gradient(135deg, #059669 0%, #0d9488 100%)',
-    icon: '📊'
-  },
-  {
-    id: 5,
-    title: 'Nebula Audio Synthesizer',
-    category: '3D & Visuals',
-    desc: 'Web Audio API spatial synth playground generating procedural audiovisual waveform sculptures.',
-    tags: ['WebAudio', 'Canvas API', 'Tone.js'],
-    likes: 76,
-    gradient: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)',
-    icon: '🎧'
-  },
-  {
-    id: 6,
-    title: 'Synapse Neural Graph',
-    category: 'UI Concepts',
-    desc: 'Interactive 3D knowledge graph visualizer mapping connections between complex engineering ideas.',
-    tags: ['ForceGraph3D', 'React Flow', 'GraphQL'],
-    likes: 93,
-    gradient: 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)',
-    icon: '🧠'
-  }
-];
-
-const Test = () => {
-  const [magicCount, setMagicCount] = useState(0);
-  const [showToast, setShowToast] = useState(false);
+export default function Test() {
   const [toastMessage, setToastMessage] = useState('');
-  const [activeFilter, setActiveFilter] = useState('All');
-  const [projects, setProjects] = useState(INITIAL_PROJECTS);
-  const [activeNav, setActiveNav] = useState('Home');
-  const [theme, setTheme] = useState('light'); // Clean Minimalist Light Mode by default
+  const [showToast, setShowToast] = useState(false);
 
-  const toggleTheme = () => {
-    const nextTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(nextTheme);
-    document.body.style.backgroundColor = nextTheme === 'light' ? '#f8fafc' : '#07080d';
-    document.body.style.color = nextTheme === 'light' ? '#0f172a' : '#f8fafc';
-    setToastMessage(`Switched to ${nextTheme === 'light' ? 'Clean Minimalist Light Mode ☀️' : 'Cyber Dark Mode 🌙'}`);
+  const triggerToast = (msg) => {
+    setToastMessage(msg);
     setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 2500);
+    setTimeout(() => setShowToast(false), 3000);
   };
 
-  const handleBuildMagic = () => {
-    const nextCount = magicCount + 1;
-    setMagicCount(nextCount);
-    setToastMessage(`✨ Magic spark #${nextCount} created! Keep building amazing things, Vishnu!`);
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 3500);
+  const handleCopyEmail = () => {
+    const email = 'vishnujr155@gmail.com';
+    navigator.clipboard?.writeText(email).then(() => {
+      triggerToast('📋 Email copied to clipboard: ' + email);
+    }).catch(() => {
+      triggerToast('✉️ Contact email: ' + email);
+    });
   };
-
-  const handleLike = (id, e) => {
-    e.stopPropagation();
-    setProjects(prev =>
-      prev.map(p => (p.id === id ? { ...p, likes: p.likes + 1 } : p))
-    );
-  };
-
-  const filteredProjects =
-    activeFilter === 'All'
-      ? projects
-      : projects.filter(p => p.category === activeFilter);
 
   return (
-    <div className={`galleria-page ${theme === 'light' ? 'theme-light' : 'theme-dark'}`}>
-      {/* Background Animated Ambient Lights & Grid */}
-      <div className="ambient-glow-container">
-        <div className="glow-orb glow-orb-1"></div>
-        <div className="glow-orb glow-orb-2"></div>
-        <div className="glow-orb glow-orb-3"></div>
-        <div className="cyber-grid-overlay"></div>
-      </div>
+    <div className="portfolio-wrapper">
+      {/* Top Navbar */}
+      <header className="navbar-sticky">
+        <div className="site-container">
+          <div className="navbar-inner">
+            <a href="#" className="nav-brand">
+              <span className="nav-brand-badge">⚡</span>
+              <span>Galleria <span className="nav-brand-sub">/ vishnu.dev</span></span>
+            </a>
 
-      <div className="content-wrapper">
-        {/* Navigation Bar */}
-        <header className="galleria-nav">
-          <a href="#home" className="brand-logo">
-            <div className="logo-badge">💎</div>
-            <span>Galleria <span className="logo-tag">/ vishnu.dev</span></span>
-          </a>
-
-          <nav className="nav-links">
-            {['Home', 'Showcase', 'Stats', 'About'].map((item) => (
-              <button
-                key={item}
-                className={`nav-link ${activeNav === item ? 'active' : ''}`}
-                onClick={() => setActiveNav(item)}
-              >
-                {item}
-              </button>
-            ))}
-          </nav>
-
-          <div className="nav-actions">
-            <button 
-              className="theme-toggle-btn"
-              onClick={toggleTheme}
-              title={`Switch to ${theme === 'light' ? 'Cyber Dark' : 'Clean Light'} Mode`}
-              aria-label="Toggle theme"
-            >
-              <span className="theme-toggle-icon">{theme === 'light' ? '🌙' : '☀️'}</span>
-              <span className="theme-toggle-text">{theme === 'light' ? 'Dark' : 'Light'}</span>
-            </button>
-
-            <button 
-              className="nav-cta"
-              onClick={() => {
-                setToastMessage("🚀 Let's collaborate! Reach out to Vishnu to build something extraordinary.");
-                setShowToast(true);
-                setTimeout(() => setShowToast(false), 3000);
-              }}
-            >
-              <span>Let's Connect</span>
-              <span>→</span>
-            </button>
+            <nav className="nav-menu">
+              <a href="https://github.com" target="_blank" rel="noreferrer" className="nav-link">GitHub</a>
+              <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="nav-link">LinkedIn</a>
+              <a href="mailto:vishnujr155@gmail.com" className="nav-link">Contact</a>
+              <button onClick={handleCopyEmail} className="nav-cta-btn">Say Hello</button>
+            </nav>
           </div>
-        </header>
+        </div>
+      </header>
 
-        {/* Hero Section */}
-        <section className="hero-section" id="home">
-          {/* Status Badge */}
-          <div className="status-badge">
-            <span className="status-dot-pulse"></span>
-            <span>Available for new projects & creative collaborations</span>
+      {/* Main Single Section UI */}
+      <main className="hero-main">
+        <div className="site-container">
+          {/* Status Indicator */}
+          <div className="status-indicator">
+            <span className="status-dot"></span>
+            <span>Available for freelance projects &amp; full-time roles</span>
           </div>
 
-          {/* Main Headline */}
+          {/* Heading */}
           <h1 className="hero-title">
-            Hey, <span className="gradient-text">Vishnu</span> here!
+            Building standard web apps &amp; <span className="hero-highlight">digital experiences.</span>
           </h1>
 
-          <p className="hero-subtitle">
-            Crafting state-of-the-art web applications, interactive 3D spaces, and intuitive digital experiences with passion and clean code.
+          {/* Bio Description */}
+          <p className="hero-description">
+            Hi, I'm <strong>Vishnu</strong>. I specialize in designing and engineering high-quality, fast, and accessible web applications with clean code, intuitive interfaces, and scalable architectures.
           </p>
 
-          {/* Inspiring Quote Glass Card */}
-          <div className="quote-glass-card">
-            <div className="quote-icon">“</div>
-            <p className="quote-text">
-              The only way to do great work is to love what you do. Keep coding, keep building!
-            </p>
-            <div className="quote-author">— Steve Jobs & Vishnu's Mantra</div>
-          </div>
-
-          {/* Interactive CTA Group */}
-          <div className="hero-cta-group">
-            <button className="btn-magic-primary" onClick={handleBuildMagic}>
-              <span>✨ Let's Build Magic</span>
-              {magicCount > 0 && (
-                <span className="btn-sparkle-counter">+{magicCount}</span>
-              )}
+          {/* Action Buttons */}
+          <div className="hero-actions">
+            <a href="mailto:vishnujr155@gmail.com" className="btn-primary">
+              <span>Get in Touch</span>
+              <span>✉️</span>
+            </a>
+            <button onClick={handleCopyEmail} className="btn-secondary">
+              <span>Copy Email</span>
+              <span>📋</span>
             </button>
-
-            <a href="#showcase" className="btn-glass-secondary">
-              <span>Explore Galleria</span>
-              <span className="btn-arrow">↓</span>
-            </a>
           </div>
 
-          {/* Quick Stats Grid */}
-          <div className="stats-grid" id="stats">
-            <div className="stat-card">
-              <div className="stat-icon">🚀</div>
-              <div className="stat-number">15+</div>
-              <div className="stat-label">Projects Crafted</div>
+          {/* 3 Metric Cards */}
+          <div className="metrics-row">
+            <div className="metric-card">
+              <div className="metric-value">15+</div>
+              <div className="metric-label">Completed Projects</div>
             </div>
-            <div className="stat-card">
-              <div className="stat-icon">⚡</div>
-              <div className="stat-number">100%</div>
-              <div className="stat-label">Code Precision</div>
+            <div className="metric-card">
+              <div className="metric-value">100%</div>
+              <div className="metric-label">Clean Code &amp; Responsive</div>
             </div>
-            <div className="stat-card">
-              <div className="stat-icon">☕</div>
-              <div className="stat-number">999+</div>
-              <div className="stat-label">Coffee Fuelled</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon">🎨</div>
-              <div className="stat-number">3D / UI</div>
-              <div className="stat-label">Visual Excellence</div>
+            <div className="metric-card">
+              <div className="metric-value">Modern</div>
+              <div className="metric-label">React 19 &amp; Vite Architecture</div>
             </div>
           </div>
-        </section>
+        </div>
+      </main>
 
-        {/* Galleria Showcase Section */}
-        <section className="showcase-section" id="showcase">
-          <div className="section-header">
-            <span className="section-tag">Curated Portfolio</span>
-            <h2 className="section-title">Explore The Galleria</h2>
-            <p className="section-desc">
-              Discover a handpicked collection of innovative web experiments, creative interfaces, and robust applications.
-            </p>
+      {/* Clean Bottom Footer */}
+      <footer className="site-footer">
+        <div className="site-container">
+          <div className="footer-content">
+            <div>
+              © {new Date().getFullYear()} <strong>Vishnu</strong> • Galleria. Built with React 19 &amp; Vite.
+            </div>
+
+            <div className="footer-socials">
+              <a href="https://github.com" target="_blank" rel="noreferrer" className="footer-social-link">GitHub</a>
+              <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="footer-social-link">LinkedIn</a>
+              <a href="mailto:vishnujr155@gmail.com" className="footer-social-link">vishnujr155@gmail.com</a>
+            </div>
           </div>
+        </div>
+      </footer>
 
-          {/* Filter Tabs */}
-          <div className="filter-tabs">
-            {['All', 'Web Apps', '3D & Visuals', 'UI Concepts'].map((filter) => (
-              <button
-                key={filter}
-                className={`filter-tab ${activeFilter === filter ? 'active' : ''}`}
-                onClick={() => setActiveFilter(filter)}
-              >
-                {filter}
-              </button>
-            ))}
-          </div>
-
-          {/* Showcase Cards Grid */}
-          <div className="cards-grid">
-            {filteredProjects.map((project) => (
-              <div key={project.id} className="showcase-card">
-                <div className="card-media">
-                  <div
-                    className="card-visual-bg"
-                    style={{ background: project.gradient }}
-                  ></div>
-                  <span className="card-emoji-icon">{project.icon}</span>
-                  <span className="card-category-badge">{project.category}</span>
-                  <button
-                    className="card-like-btn"
-                    onClick={(e) => handleLike(project.id, e)}
-                    title="Like this creation"
-                  >
-                    <span>❤️</span>
-                    <span>{project.likes}</span>
-                  </button>
-                </div>
-
-                <div className="card-body">
-                  <h3 className="card-title">{project.title}</h3>
-                  <p className="card-desc">{project.desc}</p>
-                  
-                  <div className="card-tags">
-                    {project.tags.map((tag) => (
-                      <span key={tag} className="card-tag">#{tag}</span>
-                    ))}
-                  </div>
-
-                  <a
-                    href="#live-demo"
-                    className="card-action-link"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setToastMessage(`🌟 Previewing "${project.title}" — Live interactive demo loading!`);
-                      setShowToast(true);
-                      setTimeout(() => setShowToast(false), 3000);
-                    }}
-                  >
-                    <span>Live Preview</span>
-                    <span>↗</span>
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Footer */}
-        <footer className="galleria-footer">
-          <div>
-            © {new Date().getFullYear()} <strong>Galleria</strong>. Crafted with ❤️ for Vishnu. Built with React 19 & Vite.
-          </div>
-          <div className="footer-socials">
-            <a href="https://github.com" target="_blank" rel="noreferrer" className="social-btn" title="GitHub">
-              🐙
-            </a>
-            <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="social-btn" title="LinkedIn">
-              💼
-            </a>
-            <a href="mailto:vishnu@example.com" className="social-btn" title="Email">
-              ✉️
-            </a>
-          </div>
-        </footer>
-      </div>
-
-      {/* Floating Magic Toast Popup */}
+      {/* Floating Notification Toast */}
       {showToast && (
-        <div className="magic-toast">
-          <div className="toast-sparkle-icon">✨</div>
-          <div className="toast-text">
-            <strong>Galleria Interaction</strong>
-            <span>{toastMessage}</span>
-          </div>
+        <div className="standard-toast">
+          <span>{toastMessage}</span>
         </div>
       )}
     </div>
   );
-};
-
-export default Test;
+}
